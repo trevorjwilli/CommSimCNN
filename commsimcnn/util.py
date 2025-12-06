@@ -1,10 +1,11 @@
 import torch
 
-def get_conv2d_output_shape(x: torch.Size,
-                             kernel_size: int | tuple,
-                             stride: int | tuple = 1 ,
-                             padding: int | tuple = 0,
-                             dilation: int | tuple = 1) -> torch.Size:
+def get_output_shape(x: torch.Size,
+                     kernel_size: int | tuple,
+                     stride: int | tuple = None ,
+                     padding: int | tuple = 0,
+                     dilation: int | tuple = 1,
+                     type: str = 'Conv2d') -> torch.Size:
     """Function to calculate the output shape of a Conv2d layer
 
       Args:
@@ -22,16 +23,24 @@ def get_conv2d_output_shape(x: torch.Size,
       Returns:
           A 2L torch.Size object containing the dimensions of the height and width of the tensor
     """
-    
+
     # Type assertions
     assert isinstance(x, torch.Size), "x must be an object of torch.Size"
     assert isinstance(kernel_size, int) | isinstance(kernel_size, tuple), "Expected int or tuple for kernel_size"
-    assert isinstance(stride, int) | isinstance(stride, tuple), "Expected int or tuple for stride"
     assert isinstance(padding, int) | isinstance(padding, tuple), "Expected int or tuple for padding"
     assert isinstance(dilation, int) | isinstance(dilation, tuple), "Expected int or tuple for dilation"
 
     # Dimension length assertion
     assert len(x) >= 2, "Input object must have at least 2 dimensions"
+
+    # Type assertion
+    assert type.lower() in ['conv2d', 'maxpool2d'], "Expected one of 'Conv2d' or 'MaxPool2d' for type argument"
+
+    if stride is None:
+        if type.lower() == 'conv2d':
+            stride = 1
+        elif type.lower() == 'maxpool2d':
+            stride = kernel_size
 
     if isinstance(kernel_size, int):
         kernel_size = (kernel_size, kernel_size)
