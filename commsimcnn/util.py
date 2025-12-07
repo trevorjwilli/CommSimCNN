@@ -1,5 +1,6 @@
 import torch
 
+
 def get_output_shape(x: torch.Size,
                      kernel_size: int | tuple,
                      stride: int | tuple = None ,
@@ -14,6 +15,7 @@ def get_output_shape(x: torch.Size,
           stride (int or tuple, optional): Stride of the convolution. Defualt: 1
           padding (int or tuple, optional): Padding added to all four sides of the input. Default: 0
           dilation (int or tuple, optional): Spacing between kernel elements. Default: 1
+          type (str, optional): Which type of activation to use, one of "Conv2d" or "MaxPool2d"
 
       Details:
           This function takes the dimensions of a torch.tensor and calculates the output shape after passing through
