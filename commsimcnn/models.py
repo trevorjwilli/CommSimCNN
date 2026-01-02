@@ -5,13 +5,45 @@ from commsimcnn.util import get_output_shape
 
 
 class TinyVGG(nn.Module):
+    """
+    Class for a CNN using the TinyVGG architecture
+
+    Attributes
+    ----------
+    input_shape : torch.Size
+        The shape (dimensions) of the input data to be trained on. The expected
+        order of the dimensions is color_channels x height x width
+    output_shape : int
+        The number of classes for the model to predict on
+    in_channels : int (default=1)
+        The number of color_channels for the input data
+    hidden_units : int (default=10)
+        The number of neurons in the hidden layers of the model
+    conv2d_kernel_size : int or tuple (default=3)
+        The kernel size to use for the Conv2D layers. All four layers (two in each block)
+        use the same kernel size
+    maxpool_kernel_size : int or tuple (default=2)
+        The kernel size to use for the MaxPool2D layers. Both max pool layers use the 
+        same kernel size
+    stride : int
+        The stride to use in the Conv2D layers. For maxpool layers the stride is 
+        equal to the kernel size
+    padding : int
+
+    Methods
+    -------
+    forward(x):
+        Conducts a forward pass of the model using the input data
+    calculate_output_shape():
+        Calculates the final shape of the convulational blocks for resisizing in the classifier
+    """
     def __init__(self,
                  input_shape: torch.Size,
                  output_shape: int,
                  in_channels: int = 1,
                  hidden_units: int = 10,
-                 conv2d_kernel_size: int = 3,
-                 maxpool_kernel_size: int = 2,
+                 conv2d_kernel_size: int | tuple = 3,
+                 maxpool_kernel_size: int | tuple = 2,
                  stride: int = 1,
                  padding: int = 0,
                  ):
