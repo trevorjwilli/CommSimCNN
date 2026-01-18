@@ -44,52 +44,61 @@ class TinyVGG(nn.Module):
                  hidden_units: int = 10,
                  conv2d_kernel_size: int | tuple = 3,
                  maxpool_kernel_size: int | tuple = 2,
-                 stride: int = 1,
-                 padding: int = 0,
+                 conv2d_padding: int | tuple = 0,
+                 maxpool_padding: int | tuple = 0,
+                 conv2d_stride: int | tuple = 1,
                  ):
         super().__init__()
         self.input_shape = input_shape
         self.conv2d_kernel_size = conv2d_kernel_size
         self.maxpool_kernel_size = maxpool_kernel_size
+        self.conv2d_padding = conv2d_padding
+        self.maxpool_padding = maxpool_padding
+        self.conv2d_stride = conv2d_stride
+        self.maxpool_stride = maxpool_kernel_size
         self.height, self.width = self.calculate_output_shape()
-        print(f"Output Height: {self.height} | Output Width: {self.width}")
+        # print(f"Output Height: {self.height} | Output Width: {self.width}")
         self.block_1 = nn.Sequential(
             nn.Conv2d(
                 in_channels=in_channels,
                 out_channels=hidden_units,
-                kernel_size=conv2d_kernel_size,
-                stride=stride,
-                padding=padding
+                kernel_size=self.conv2d_kernel_size,
+                stride=self.conv2d_stride,
+                padding=self.conv2d_padding
             ),
             nn.ReLU(),
             nn.Conv2d(
                 in_channels=hidden_units,
                 out_channels=hidden_units,
-                kernel_size=conv2d_kernel_size,
-                stride=stride,
-                padding=padding
+                kernel_size=self.conv2d_kernel_size,
+                stride=self.conv2d_stride,
+                padding=self.conv2d_padding
             ),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=maxpool_kernel_size)
+            nn.MaxPool2d(
+                kernel_size=self.maxpool_kernel_size,
+                padding=self.maxpool_padding)
         )
         self.block_2 = nn.Sequential(
             nn.Conv2d(
                 in_channels=hidden_units,
                 out_channels=hidden_units,
-                kernel_size=conv2d_kernel_size,
-                stride=stride,
-                padding=padding
+                kernel_size=self.conv2d_kernel_size,
+                stride=self.conv2d_stride,
+                padding=self.conv2d_padding
             ),
             nn.ReLU(),
             nn.Conv2d(
                 in_channels=hidden_units,
                 out_channels=hidden_units,
-                kernel_size=conv2d_kernel_size,
-                stride=stride,
-                padding=padding
+                kernel_size=self.conv2d_kernel_size,
+                stride=self.conv2d_stride,
+                padding=self.conv2d_padding
             ),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=maxpool_kernel_size)
+            nn.MaxPool2d(
+                kernel_size=self.maxpool_kernel_size,
+                padding=self.maxpool_padding)
         )
         self.classifer = nn.Sequential(
             nn.Flatten(),
@@ -110,20 +119,34 @@ class TinyVGG(nn.Module):
 
         # Output shape of block 1
         out = get_output_shape(out,
-                               kernel_size=self.conv2d_kernel_size)
+                               kernel_size=self.conv2d_kernel_size,
+                               padding=self.conv2d_padding,
+                               stride=self.conv2d_stride)
+
         out = get_output_shape(out,
-                               kernel_size=self.conv2d_kernel_size)
+                               kernel_size=self.conv2d_kernel_size,
+                               padding=self.conv2d_padding,
+                               stride=self.conv2d_stride)
+        
         out = get_output_shape(out,
                                kernel_size=self.maxpool_kernel_size,
+                               padding=self.maxpool_padding,
+                               stride=self.maxpool_stride,
                                type='maxpool2d')
         
         # Output shape of block 2
         out = get_output_shape(out,
-                               kernel_size=self.conv2d_kernel_size)
+                               kernel_size=self.conv2d_kernel_size,
+                               padding=self.conv2d_padding,
+                               stride=self.conv2d_stride)
         out = get_output_shape(out,
-                               kernel_size=self.conv2d_kernel_size)
+                               kernel_size=self.conv2d_kernel_size,
+                               padding=self.conv2d_padding,
+                               stride=self.conv2d_stride)
         out = get_output_shape(out,
                                kernel_size=self.maxpool_kernel_size,
+                               padding=self.maxpool_padding,
+                               stride=self.maxpool_stride,
                                type='maxpool2d')
         
         return (out[0], out[1])
